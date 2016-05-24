@@ -10,7 +10,7 @@ NAnal is a list of functions written in R which help identify the strength of
 data frame variables that are NA heavy. The idea is that you might have a sparse 
 data frame with many variables, some of which may have a lot of NA values. 
 However, having a lot of NA values for one 
-variable may not necessarily mean the values it does contain, are bad predictors.
+variable may not necessarily mean the values it does contain are bad predictors.
 These functions help get a gauge on the sparse variables and find the optimal subset
 of the data frame which minimizes NAs and maximizes the number of observations
 without deleting variables.
