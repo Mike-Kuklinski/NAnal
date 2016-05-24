@@ -1,3 +1,6 @@
+---
+output: pdf_document
+---
 #NAnal - Example
 
 **Author:** Mike Kuklinski  
@@ -20,6 +23,9 @@ orig_na_percent <- round(sum(is.na(df_test))/(nrow(df_test)*ncol(df_test)), 2)
 orig_na_percent
 ```
 
+\newpage
+# NAnal.var2ans   
+
 `NAnal.var2ans` will return a table showing the correlation, percent NA, and pvalue associated
 with each predictor variable.
 
@@ -29,7 +35,9 @@ df_var2ans <- suppressWarnings(NAnal.var2ans(df_test, 'ans'))
 df_var2ans
 ```
 
-  
+\newpage
+# NAnal.reduce_comb  
+
 `NAnal.reduce_comb` returns a list of every possible index combination by which the original 
 data frame could be subset by complete cases.
 
@@ -37,8 +45,12 @@ data frame could be subset by complete cases.
 df_reduce_combs <- NAnal.reduce_comb(df_test)
 # Number of combinations
 length(df_reduce_combs$lists)
-tail(df_reduce_combs$lists,5)
+head(df_reduce_combs$lists,10)
 ```
+
+\newpage
+# NAnal.score  
+
 `NAnal.score` runs through the list of index combinations provided by `NAnal.reduce_comb`
 and provides the following information for each resulting subset data frame:  
 
@@ -54,8 +66,11 @@ I set `min_vote_count` equal to 6. This just means that when scoring the combina
 like to give more weight to resulting data frames with 6 or more observations.
 ```{r}
 df_scores <- NAnal.score(df_test, df_reduce_combs$lists, 6)
-head(df_scores, 10)
+head(df_scores, 30)
 ```
+
+\newpage
+# NAnal.score - continued  
 
 Looking over the scores, I can see that by subsetting the original data frame by complete cases of variable `o`,
 I'll get 3 rows/observations but reduce the NA percent to 8% respectively.
@@ -72,10 +87,10 @@ reduce_idx
 new_df <- df_test[complete.cases(df_test[,reduce_idx[[1]]]),]    
 new_df
 ```
-Similarly, I see that if I subset by complete cases of `c`, I get 8 rows/observations and 13% NA.
+Similarly, I see that if I subset by complete cases of `c p`, I get 6 rows/observations and 12% NA.
 ```{r}
 # Identify the first combination (associated with 'c')
-idx_num <- grep('^c$',df_scores$ADJVarNames)
+idx_num <- grep('^c p$',df_scores$ADJVarNames)
 # Get indices as a list
 reduce_idx <- lapply(str_split(as.character(reduce_idx_list[idx_num]), pattern = ' '), as.integer)
 reduce_idx

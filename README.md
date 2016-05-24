@@ -39,4 +39,4 @@ subset by complete cases of the reduce_comb list. Included in the summary statis
 is a weighted score (true Bayesian) for each combination which evaluates the
 percent of NAs remaining versus the number of observations/rows remaining.
 
-See also *example.Rmd*
+See also *example.Rmd/example.pdf*
