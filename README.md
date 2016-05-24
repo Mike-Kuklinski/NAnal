@@ -20,7 +20,7 @@ dplyr
 foreach  
 parallel  
 doSNOW  
-digest
+digest  
 stringr
 
 
