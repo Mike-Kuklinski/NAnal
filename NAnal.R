@@ -22,7 +22,6 @@ registerDoSNOW(cl)
 library(digest)
 library(stringr)
 
-
 # ==============================================================================
 # Load/Create Test Data frames
 # ==============================================================================
@@ -108,8 +107,10 @@ NAnal.var2ans <- function(df, ans_var, lo_list = NA){
 # pick_lu_list - string version of pick_list
 # start_trg - Trigger which identifies if it's the start of the function 
 # orig_names - Original Names of the variables in the data frame
-# col_reduce - Option to have predictor variables with duplicate NA rows to be removed during
+# dup_reduce - Option to have predictor variables with duplicate NA rows to be removed during
 #              the reduction process
+# na_col_only - Option to have only select columns containing NAs values when recursively making selections to reduce on.
+
 
 NAnal.reduce_comb <- function(df, 
                               selected_var = NA, 
@@ -118,7 +119,8 @@ NAnal.reduce_comb <- function(df,
                               pick_lu_list = c(), 
                               start_trg = T, 
                               orig_names = NA, 
-                              col_reduce = T){
+                              dup_reduce = T,
+                              na_col_only = T){
     # Check if start and adjust parameters accordingly
     if(start_trg == T){
         df <- data.frame(is.na(df)*1)
@@ -136,7 +138,7 @@ NAnal.reduce_comb <- function(df,
     if(nrow(df_reduced) > 0){
         if(sum(df_reduced) > 0){
             # Reduce/Remove column/variables with the same NA rows
-            if(col_reduce){
+            if(dup_reduce){
                 dups <- which(!duplicated(apply(df_reduced, 2, digest)))
             }else{dups <- 1:length(df_reduced)
             }
@@ -146,9 +148,15 @@ NAnal.reduce_comb <- function(df,
             sub_dup_names <- names(df_reduced)[sub_dups]
             df_reduced <- data.frame(df_reduced[,dups])
             names(df_reduced) <- dup_names
-            # Get list of new available selections (i.e. variables containing some(not all) NA values)
-            new_pick_idx <- which(between(colSums(df_reduced), 1, (nrow(df_reduced)-1)))
-            new_pick_names <- names(df_reduced)[new_pick_idx]
+            # Check if only variables containing NA values are to be looked at
+            if(na_col_only){
+                # Get list of new available selections (i.e. variables containing some(not all) NA values)
+                new_pick_idx <- which(between(colSums(df_reduced), 1, (nrow(df_reduced)-1)))
+                new_pick_names <- names(df_reduced)[new_pick_idx]
+            }else{
+                new_pick_idx <- which(between(colSums(df_reduced), 0, (nrow(df_reduced)-1)))
+                new_pick_names <- names(df_reduced)[new_pick_idx]
+            }
             # Subset new picks to only include sub_dup indices
             sub_pick_idx <- which(new_pick_names %in% sub_dup_names)
             new_pick_names <- new_pick_names[sub_pick_idx]
@@ -169,9 +177,8 @@ NAnal.reduce_comb <- function(df,
                                                 pick_lu_list, 
                                                 F, 
                                                 orig_names, 
-                                                col_reduce)
-                    #pick_list <- result[[1]]
-                    #pick_lu_list <- result[[2]]
+                                                dup_reduce,
+                                                na_col_only)
                     pick_list <- result$lists
                     pick_lu_list <- result$strings
                 }
@@ -180,7 +187,6 @@ NAnal.reduce_comb <- function(df,
     }
     list('lists' = pick_list, 'strings' = pick_lu_list)
 }
-
 
 #===============================================================================
 # NAnal.score - Code (evaluates NAnal.reduce_comb list)
